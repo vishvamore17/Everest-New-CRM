@@ -64,20 +64,17 @@ export default function Page() {
         JSON.stringify({ isLogin, isForgotPassword, showVerification,emailSent })
       );
     }, [isLogin, isForgotPassword, showVerification,emailSent]);
-
     useEffect(() => {
       if (typeof window !== "undefined") {
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get("email");
-        const token = params.get("token");
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get("email");
   
-        if (email && token) {
+        if (email) {
           localStorage.setItem("userEmail", email);
-          localStorage.setItem("authToken", token);
-          router.push("/Dashboard"); // Redirect to Dashboard
+          console.log("Email stored in localStorage:", email);
         }
       }
-    }, [router]);
+    }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

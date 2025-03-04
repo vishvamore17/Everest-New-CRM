@@ -321,6 +321,8 @@ body {
 }
 
 
+
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .form-box {
@@ -343,4 +345,24 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+.w-24 {
+  width: 14rem;
+}
+.h-24 {
+  height: 14rem;
+}
+
+.max-w-lg {
+  max-width: 65rem;
+}
+
+.pl-4 {
+  padding-left: 18rem;
+}
+
+.mb-4 {
+  margin-bottom: 9rem;
 }
