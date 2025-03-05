@@ -4,7 +4,9 @@ import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
+
 } from "@/components/ui/sidebar"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
@@ -28,7 +30,7 @@ import { Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Pagination
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import SearchBar from '@/components/globalSearch'
 import { Selection } from "@nextui-org/react";
-import { SortDescriptor } from "@nextui-org/react"
+
 
 
 interface Lead {
@@ -57,38 +59,39 @@ const formatDate = (dateString: string): string => {
     return date.toISOString().split("T")[0]; // Returns "YYYY-MM-DD"
 };
 
-// Table columns definition
 const columns = [
-    { name: "COMPANY", uid: "companyName", sortable: true },
-    { name: "CUSTOMER", uid: "customerName", sortable: true },
-    { name: "CONTACT", uid: "contactNumber", sortable: true },
-    { name: "EMAIL", uid: "emailAddress", sortable: true },
-    { name: "ADDRESS", uid: "address", sortable: true },
-    { name: "PRODUCT", uid: "productName", sortable: true },
-    { name: "AMOUNT", uid: "amount", sortable: true },
-    { name: "GST", uid: "gstNumber", sortable: true },
-    { name: "STATUS", uid: "status", sortable: true },
+    { name: "COMPANY", uid: "companyName", sortable: true, width: "120px" },
+    { name: "CUSTOMER", uid: "customerName", sortable: true, width: "120px" },
+    { name: "CONTACT", uid: "contactNumber", sortable: true, width: "100px" },
+    { name: "EMAIL", uid: "emailAddress", sortable: true, width: "150px" },
+    { name: "ADDRESS", uid: "address", sortable: true, width: "180px" },
+    { name: "PRODUCT", uid: "productName", sortable: true, width: "120px" },
+    { name: "AMOUNT", uid: "amount", sortable: true, width: "100px" },
+    { name: "GST", uid: "gstNumber", sortable: true, width: "100px" },
+    { name: "STATUS", uid: "status", sortable: true, width: "100px" },
     {
         name: "DATE",
         uid: "date",
         sortable: true,
-        render: (row: any) => formatDate(row.date) // Only date will be shown
-    },
+        width: "150px",
+        render: (row: any) => formatDate(row.date),
+    }
+    ,
     {
         name: "END DATE",
         uid: "endDate",
         sortable: true,
-        render: (row: any) => formatDate(row.endDate) // Only date will be shown
+        width: "120px",
+        render: (row: any) => formatDate(row.endDate)
     },
     {
         name: "NOTES",
         uid: "notes",
-        sortable: true
+        sortable: true,
+        width: "180px"
     },
-    { name: "ACTION", uid: "actions", sortable: true },
-    // { name: "NOTES", uid: "notes", sortable: true },
+    { name: "ACTION", uid: "actions", sortable: true, width: "100px" },
 ];
-
 const INITIAL_VISIBLE_COLUMNS = ["companyName", "customerName", "contactNumber", "emailAddress", "address", "productName", "amount", "gstNumber", "status", "date", "endDate", "notes", "actions"];
 
 const formSchema = z.object({
@@ -103,11 +106,11 @@ const formSchema = z.object({
     status: z.enum(["New", "Discussion", "Demo", "Proposal", "Decided"]),
     date: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: "Invalid date",
-      }).transform((val) => new Date(val)),  // ✅ Convert string to Date
-    
-      endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    }).transform((val) => new Date(val)),  // ✅ Convert string to Date
+
+    endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: "Invalid date",
-      }).transform((val) => new Date(val)),  // ✅ Convert string to Date
+    }).transform((val) => new Date(val)),  // ✅ Convert string to Date
     notes: z.string().optional(),
     isActive: z.boolean(),
 })
@@ -184,6 +187,26 @@ export default function LeadPage() {
     });
     const [page, setPage] = useState(1);
 
+    const handleSortChange = (column: string) => {
+        setSortDescriptor((prevState) => {
+            // Check if the column being clicked is the current sorted column
+            if (prevState.column === column) {
+                // Toggle direction if the same column is clicked again
+                return {
+                    column,
+                    direction: prevState.direction === "ascending" ? "descending" : "ascending",
+                };
+            } else {
+
+                return {
+                    column,
+                    direction: "ascending",
+                };
+            }
+        });
+    };
+
+
     // Form setup
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -209,7 +232,7 @@ export default function LeadPage() {
     const headerColumns = React.useMemo(() => {
         if (visibleColumns.size === columns.length) return columns; // Check if all columns are selected
         return columns.filter((column) => visibleColumns.has(column.uid));
-      }, [visibleColumns]);
+    }, [visibleColumns]);
 
     const filteredItems = React.useMemo(() => {
         let filteredLeads = [...leads];
@@ -433,16 +456,16 @@ export default function LeadPage() {
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between gap-3 items-end">
                     <Input
-                          isClearable
-                          className="w-full sm:max-w-[44%]"
-                          placeholder="Search by name..."
-                          startContent={<SearchIcon className="h-4 w-4 text-muted-foreground" />}
-                          value={filterValue}
-                          onChange={(e) => setFilterValue(e.target.value)}
-                          onClear={() => setFilterValue("")}
+                        isClearable
+                        className="w-full sm:max-w-[80%]" // Full width on small screens, 44% on larger screens
+                        placeholder="Search by name..."
+                        startContent={<SearchIcon className="h-4 w-10 text-muted-foreground" />}
+                        value={filterValue}
+                        onChange={(e) => setFilterValue(e.target.value)}
+                        onClear={() => setFilterValue("")}
                     />
-                    <div className="flex gap-3">
 
+                    <div className="flex gap-3">
                         <Dropdown>
                             <DropdownTrigger className="hidden sm:flex">
                                 <Button endContent={<ChevronDownIcon className="text-small" />} variant="default">
@@ -455,21 +478,27 @@ export default function LeadPage() {
                                 closeOnSelect={false}
                                 selectedKeys={visibleColumns}
                                 selectionMode="multiple"
-                                className="bg-gray-200 dark:bg-gray-800 backdrop-blur-sm transition-colors duration-300"
+                                onSelectionChange={(keys) => {
+                                    const newKeys = new Set<string>(Array.from(keys as Iterable<string>));
+                                    setVisibleColumns(newKeys);
+                                }}
+                                style={{ backgroundColor: "#f0f0f0", color: "#000000" }}  // Set background and font color
                             >
                                 {columns.map((column) => (
-                                    <DropdownItem key={column.uid} className="capitalize">
+                                    <DropdownItem key={column.uid} className="capitalize" style={{ color: "#000000" }}>
                                         {column.name}
                                     </DropdownItem>
                                 ))}
                             </DropdownMenu>
-
                         </Dropdown>
+
+
                         <Button
                             className="addButton"
                             style={{ backgroundColor: 'hsl(339.92deg 91.04% 52.35%)' }}
-                            color="primary"
-                            endContent={<PlusCircle />}
+                            variant="default"
+                            size="default"
+                            endContent={<PlusCircle />} // Add an icon at the end
                             onClick={() => setIsAddNewOpen(true)}
                         >
                             Add New
@@ -524,24 +553,24 @@ export default function LeadPage() {
                     }}
                 />
 
-<div className="rounded-lg bg-default-100 hover:bg-default-200 hidden sm:flex w-[30%] justify-end gap-2">
-                <Button
-                    className="bg-[hsl(339.92deg_91.04%_52.35%)]"
-                    variant="default"
-                    size="sm"
-                    disabled={pages === 1} // Use the `disabled` prop
-                    onClick={onPreviousPage}
+                <div className="rounded-lg bg-default-100 hover:bg-default-200 hidden sm:flex w-[30%] justify-end gap-2">
+                    <Button
+                        className="bg-[hsl(339.92deg_91.04%_52.35%)]"
+                        variant="default"
+                        size="sm"
+                        disabled={pages === 1} // Use the `disabled` prop
+                        onClick={onPreviousPage}
                     >
-                    Previous
-                </Button>
-                <Button
-                    className="bg-[hsl(339.92deg_91.04%_52.35%)]"
-                    variant="default"
-                    size="sm"
-                    onClick={onNextPage} // Use `onClick` instead of `onPress`
+                        Previous
+                    </Button>
+                    <Button
+                        className="bg-[hsl(339.92deg_91.04%_52.35%)]"
+                        variant="default"
+                        size="sm"
+                        onClick={onNextPage} // Use `onClick` instead of `onPress`
                     >
-                    Next
-                </Button>
+                        Next
+                    </Button>
 
                 </div>
             </div>
@@ -610,10 +639,10 @@ export default function LeadPage() {
                         </BreadcrumbList>
                     </Breadcrumb>
                     <div className="flex-1 flex justify-end space-x-4 mr-10">
-                            <div  className="w-52">
-                                <SearchBar/>
-                            </div>
+                        <div className="w-52">
+                            <SearchBar />
                         </div>
+                    </div>
                 </header>
 
                 <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-15 max-w-screen-xl">
@@ -623,7 +652,7 @@ export default function LeadPage() {
                         bottomContent={bottomContent}
                         bottomContentPlacement="outside"
                         classNames={{
-                            wrapper: "max-h-[382px]",
+                            wrapper: "max-h-[382px] text-sm", // Reduced font size (text-sm)
                         }}
                         selectedKeys={selectedKeys}
                         selectionMode="multiple"
@@ -633,27 +662,35 @@ export default function LeadPage() {
                         onSelectionChange={setSelectedKeys}
                         onSortChange={(descriptor) => {
                             setSortDescriptor({
-                              column: descriptor.column as string,
-                              direction: descriptor.direction as "ascending" | "descending",
+                                column: descriptor.column as string,
+                                direction: descriptor.direction as "ascending" | "descending",
                             });
-                          }}                    >
+                        }}
+                    >
                         <TableHeader columns={headerColumns}>
                             {(column) => (
                                 <TableColumn
                                     key={column.uid}
                                     align={column.uid === "actions" ? "center" : "start"}
                                     allowsSorting={column.sortable}
+                                    style={{ width: column.width }}
+                                    onClick={() => handleSortChange(column.uid)} // Trigger sort change on click
                                 >
                                     {column.name}
+                                    {sortDescriptor?.column === column.uid && (
+                                        <span>
+                                            {sortDescriptor.direction === "ascending" ? "↑" : "↓"}
+                                        </span>
+                                    )}
                                 </TableColumn>
                             )}
                         </TableHeader>
-                        <TableBody emptyContent={"No leads found"} items={sortedItems}>
+                        <TableBody emptyContent="No leads found" items={sortedItems}>
                             {(item) => (
                                 <TableRow key={item._id}>
                                     {(columnKey) => (
-                                        <TableCell>
-                                            {renderCell(item,  columnKey as string)}
+                                        <TableCell style={{ fontSize: "12px", padding: "8px" }}> {/* Reduced font size and padding */}
+                                            {renderCell(item, columnKey as string)}
                                         </TableCell>
                                     )}
                                 </TableRow>
@@ -662,7 +699,7 @@ export default function LeadPage() {
                     </Table>
 
                     <Dialog open={isAddNewOpen} onOpenChange={setIsAddNewOpen}>
-                        <DialogContent className="sm:max-w-[600px]">
+                        <DialogContent className="sm:max-w-[2000px] w-[90vw]">
                             <DialogHeader>
                                 <DialogTitle>Add New Lead</DialogTitle>
                                 <DialogDescription>

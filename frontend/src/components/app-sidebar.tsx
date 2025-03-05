@@ -100,7 +100,7 @@ const data = {
         },
         {
           title: "List",
-          url: "",
+          url: "/invoice",
         },
         {
           title: "Graph",
@@ -144,7 +144,7 @@ const data = {
         },
         {
           title: "List",
-          url: "",
+          url: "/deal",
         },
         {
           title: "Graph",
@@ -168,7 +168,7 @@ const data = {
         },
         {
           title: "List",
-          url: "",
+          url: "/task",
         },
         {
           title: "Graph",
@@ -192,7 +192,7 @@ const data = {
         },
         {
           title: "List",
-          url: "",
+          url: "/complaint",
         },
         {
           title: "Email",
@@ -212,7 +212,7 @@ const data = {
         },
         {
           title: "List",
-          url: "",
+          url: "/contact",
         },
         {
           title: "Email",
@@ -268,10 +268,11 @@ const data = {
         },
         {
           title: "List",
-          url: "",
+          url: "/Scheduled",
         },
       ],
     },
+    
   ],
 }
 

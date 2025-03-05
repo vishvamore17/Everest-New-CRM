@@ -241,13 +241,13 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-      {loading ? (
-        <div className="flex items-center justify-center">
-          <LuLoader className="animate-spin text-gray-600 dark:text-gray-300" size={50} />
-        </div>
+    <div className="min-h-screen flex items-center justify-center p-4">
+    {loading ? (
+      <div className="flex items-center justify-center">
+        <LuLoader className="animate-spin text-gray-600 dark:text-gray-300" size={50} />
+      </div>
       ) : (
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-8 md:p-8 shadow-input bg-white dark:bg-black">
+      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-8 md:p-8 shadow-input bg-white dark:bg-black border border-gray-300 dark:border-gray-700">
         {isForgotPassword ? (
           emailSent ? (
             // Show email sent confirmation

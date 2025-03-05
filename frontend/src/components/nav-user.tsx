@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut,Cloud } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
 
 interface Owner {
   _id: string;
@@ -50,6 +51,8 @@ export function NavUser() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false); // State for delete modal
   const [isDeleting, setIsDeleting] = useState(false); // State to handle deleting state
+  const [hover, setHover] = useState(false);
+  const storageValue = 33; // Your progress value
 
   const form = useForm<Owner>({
     defaultValues: {
@@ -201,6 +204,28 @@ export function NavUser() {
     <>
       <SidebarMenu>
         <SidebarMenuItem>
+        <div className="px-4 py-3 space-y-1">
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <Cloud className="size-4 text-gray-500" />
+        <span className="font-medium">Google Storage</span>
+      </div>
+
+      {/* Progress Bar with Tooltip on Hover */}
+      <div
+        className="relative group"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+      >
+        <Progress value={storageValue} className="h-1" />
+
+        {/* Tooltip */}
+        {hover && (
+          <div className="absolute left-1/2 -top-6 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-800 px-2 py-1 text-xs text-white shadow-md">
+            {storageValue}% Used
+          </div>
+        )}
+      </div>
+    </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
@@ -289,7 +314,7 @@ export function NavUser() {
               </div>
 
               {/* Right Column: Owner Details */}
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 text-gray-700 py-4 md:py-6 text-base md:text-lg">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 text-gray-700 py-4 md:py-6 text-base md:text-sm">
                 <div>
                   <span className="font-bold">Owner Name:</span>
                   <span className="block">{currentOwner.ownerName}</span>
