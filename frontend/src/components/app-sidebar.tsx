@@ -80,7 +80,7 @@ const data = {
         },
         {
           title: "Graph",
-          url: "",
+          url: "/Lead-chart",
         },
         {
           title: "Drag & Drop",
@@ -104,7 +104,7 @@ const data = {
         },
         {
           title: "Graph",
-          url: "",
+          url: "/Invoice-chart",
         },
         {
           title: "Drag & Drop",
@@ -124,7 +124,7 @@ const data = {
         },
         {
           title: "Email",
-          url: "",
+          url: "/reminder/reminderEmail",
         },
         {
           title: "Create",
@@ -148,7 +148,7 @@ const data = {
         },
         {
           title: "Graph",
-          url: "",
+          url: "/Deal-chart",
         },
         {
           title: "Drag & Drop",

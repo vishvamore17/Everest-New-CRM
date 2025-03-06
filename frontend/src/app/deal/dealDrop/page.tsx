@@ -11,7 +11,6 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { ModeToggle } from "@/components/ModeToggle"
-import SearchBar from '@/components/globalSearch'
 
 interface Lead {
   _id: string;
@@ -31,13 +30,13 @@ interface Lead {
 
 const getAllLeads = async (): Promise<Lead[]> => {
   try {
-    const response = await fetch("http://localhost:8000/api/v1/lead/getAllLeads");
+    const response = await fetch("http://localhost:8000/api/v1/deal/getAllDeals");
     const data = await response.json();
     if (data.success) return data.data;
     throw new Error(data.message);
   } catch (error) {
-    console.error("Error fetching leads:", error);
-    throw new Error("Failed to fetch leads");
+    console.error("Error fetching deals:", error);
+    throw new Error("Failed to fetch deals");
   }
 };
 
@@ -64,9 +63,13 @@ export default function App() {
         const fetchedLeads = await getAllLeads();
         groupLeadsByStatus(fetchedLeads);
       } catch (error) {
-        setError(error.message);
+        if (error instanceof Error) {
+          setError(error.message); // TypeScript now recognizes 'message'
+        } else {
+          setError("An unknown error occurred");
       }
     };
+  }
     fetchLeads();
   }, []);
 
@@ -112,17 +115,17 @@ export default function App() {
     setGroupedLeads((prev) => ({
       ...prev,
       [fromStatus]: prev[fromStatus]?.filter((l) => l._id !== lead._id) || [],
-      [toStatus]: [...(prev[toStatus] || []), updatedLead],
+      [toStatus]: [...(prev[toStatus] || []), updatedLead as Lead], 
     }));
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/lead/updateLeadStatus", {
+      const response = await fetch("http://localhost:8000/api/v1/deal/updateDealStatus", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leadId: lead._id, status: toStatus }),
+        body: JSON.stringify({ dealId: lead._id, status: toStatus }),
       });
       const data = await response.json();
-      if (!data.success) throw new Error("Failed to update lead status on server.");
+      if (!data.success) throw new Error("Failed to update deal status on server.");
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -140,7 +143,7 @@ export default function App() {
                <Breadcrumb>
                  <BreadcrumbList className="flex items-center space-x-2">
                    <BreadcrumbItem className="hidden md:block">
-                     <BreadcrumbLink href="/deal">Deal</BreadcrumbLink>
+                     <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                    </BreadcrumbItem>
                    <BreadcrumbSeparator className="hidden md:block" />
                    <BreadcrumbItem>
@@ -148,11 +151,6 @@ export default function App() {
                    </BreadcrumbItem>
                  </BreadcrumbList>
                </Breadcrumb>
-               <div className="flex-1 flex justify-end space-x-4 mr-10">
-                            <div  className="w-52">
-                                <SearchBar/>
-                            </div>
-                        </div>
              </header>
            </SidebarInset>
            
@@ -183,7 +181,7 @@ export default function App() {
                 className="scrollable"
               >
                 {leadsInStatus.length === 0 ? (
-                  <p className="text-gray-500 text-center">No leads available</p>
+                  <p className="text-gray-500 text-center">No deals available</p>
                 ) : (
                   leadsInStatus.map((lead) => (
                     <div
@@ -224,7 +222,7 @@ export default function App() {
           >
             <div className="modal-header">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Lead Details
+                Deal Details
               </h2>
               <button
                 onClick={closeModal}

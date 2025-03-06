@@ -11,8 +11,10 @@ const storage = multer.diskStorage({
   },
 });
 
-
-const upload = multer({ storage }).single('logo');
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+}).single('logo');
 
 const addOwner = async (req, res) => {
   upload(req, res, async (err) => {
@@ -64,7 +66,6 @@ const addOwner = async (req, res) => {
   });
 };
 
-
 // Update Owner API
 const updateOwner = async (req, res) => {
   upload(req, res, async (err) => {
@@ -76,14 +77,18 @@ const updateOwner = async (req, res) => {
     try {
       const ownerId = req.params.id;
 
+      // Log the request body and file for debugging
+      console.log("Request Body:", req.body);
+      console.log("Uploaded File:", req.file);
+
       // Fetch existing owner details
       const existingOwner = await Owner.findById(ownerId);
       if (!existingOwner) {
         return res.status(404).json({ message: "Owner not found" });
       }
 
-      // Replace backslashes with forward slashes in the new logo path
-      const logoPath = req.file ? req.file.path.replace(/\\/g, "/") : existingOwner.logo;
+      // If a new logo is uploaded, update the logo path
+      const logoPath = req.file ? `/uploads/${path.basename(req.file.path)}` : existingOwner.logo;
 
       // Update owner details
       const updatedData = {
@@ -111,7 +116,6 @@ const updateOwner = async (req, res) => {
     }
   });
 };
-
 // const updateOwner = async (req, res) => {
 //   const { id } = req.params;
 //   try {
@@ -162,7 +166,6 @@ const deleteOwner = async (req, res) => {
     res.status(400).json({ message: 'Error deleting owner', error: error.message });
   }
 };
-
 
 // Get the count of owners
 const getOwnerCount = async (req, res) => {

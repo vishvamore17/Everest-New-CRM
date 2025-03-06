@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ModeToggle } from "@/components/ModeToggle"
 import { Meteors } from "@/components/ui/meteors";
-import SearchBar from '@/components/globalSearch'
+
 
 interface Invoice {
   _id: string;
@@ -49,18 +49,18 @@ const getAllInvoices = async (): Promise<Invoice[]> => {
     if (data.success) return data.data;
     throw new Error(data.message);
   } catch (error) {
-    console.error("Error fetching leads:", error);
-    throw new Error("Failed to fetch leads");
+    console.error("Error fetching invoices:", error);
+    throw new Error("Failed to fetch invoices");
   }
-}
+};
+
 export default function App() {
   const [error, setError] = useState("");
   const [draggedOver, setDraggedOver] = useState<string | null>(null);
   const [groupedInvoices, setGroupedInvoices] = useState<Record<string, Invoice[]>>({});
   const [selectedInvoice, setSelectedInvoice] = React.useState<Invoice | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-
-
+  
   const handleInvoiceClick = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
     setIsModalOpen(true);
@@ -70,25 +70,21 @@ export default function App() {
     setIsModalOpen(false);
     setSelectedInvoice(null);
   };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
+  
   useEffect(() => {
-    const fetchLeads = async () => {
+    const fetchInvoices = async () => {
       try {
-        const fetchedLeads = await getAllInvoices();
-        groupInvoicesByStatus(fetchedLeads);
+        const fetchedInvoices = await getAllInvoices();
+        groupInvoicesByStatus(fetchedInvoices);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message); // TypeScript now recognizes 'message'
         } else {
           setError("An unknown error occurred");
-        }
-      };
-    }
-    fetchLeads();
+      }
+    };
+  }
+    fetchInvoices();
   }, []);
 
   const groupInvoicesByStatus = (invoices: Invoice[]) => {
@@ -100,61 +96,67 @@ export default function App() {
     setGroupedInvoices(grouped);
   };
 
-  const handleDragStart = (e: React.DragEvent, invoice: Invoice, fromStatus: string) => {
-    e.dataTransfer.setData("invoice", JSON.stringify(invoice));
-    e.dataTransfer.setData("fromStatus", fromStatus);
-    e.dataTransfer.effectAllowed = "move";
-  };
 
-  const handleDrop = async (e: React.DragEvent, toStatus: string) => {
-    e.preventDefault();
-    setDraggedOver(null);
-    const invoiceData = e.dataTransfer.getData("invoice");
-    const fromStatus = e.dataTransfer.getData("fromStatus");
-
-    if (!invoiceData || !fromStatus || fromStatus === toStatus) return;
-
-    const invoice: Invoice = JSON.parse(invoiceData);
-    const updatedInvoice = { ...invoice, status: toStatus };
-
-    setGroupedInvoices((prev) => ({
-      ...prev,
-      [fromStatus]: prev[fromStatus]?.filter((l) => l._id !== invoice._id) || [],
-      [toStatus]: [...(prev[toStatus] || []), updatedInvoice as Invoice], // Explicitly cast updatedLead
-    }));
-
-
-    try {
-      const response = await fetch("http://localhost:8000/api/v1/invoice/updateStatus", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceId: invoice._id, status: toStatus }),
-      });
-      const data = await response.json();
-      if (!data.success) throw new Error("Failed to update lead status on server.");
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
   const statusColors: Record<string, string> = {
     Pending: "bg-purple-300 text-gray-800 border-2 border-purple-900 shadow-lg shadow-purple-900/50",
     Unpaid: "bg-purple-300 text-gray-800 border-2 border-purple-900 shadow-lg shadow-purple-900/50",
     Paid: "bg-purple-300 text-gray-800 border-2 border-purple-900 shadow-lg shadow-purple-900/50",
   };
 
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0];
+  };
+
+    const handleDragStart = (e: React.DragEvent, invoice: Invoice, fromStatus: string) => {
+      e.dataTransfer.setData("invoice", JSON.stringify(invoice));
+      e.dataTransfer.setData("fromStatus", fromStatus);
+      e.dataTransfer.effectAllowed = "move";
+    };
+
+     const handleDrop = async (e: React.DragEvent, toStatus: string) => {
+        e.preventDefault();
+        setDraggedOver(null);
+        const invoiceData = e.dataTransfer.getData("invoice");
+        const fromStatus = e.dataTransfer.getData("fromStatus");
+    
+        if (!invoiceData || !fromStatus || fromStatus === toStatus) return;
+    
+        const invoice: Invoice = JSON.parse(invoiceData);
+        const updatedInvoice = { ...invoice, status: toStatus };
+    
+        setGroupedInvoices((prev) => ({
+          ...prev,
+          [fromStatus]: prev[fromStatus]?.filter((l) => l._id !== invoice._id) || [],
+          [toStatus]: [...(prev[toStatus] || []), updatedInvoice as Invoice], 
+        }));
+        
+        try {
+          const response = await fetch("http://localhost:8000/api/v1/invoice/updateInvoiceStatus", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ invoiceId: invoice._id, status: toStatus }),
+          });
+          const data = await response.json();
+          if (!data.success) throw new Error("Failed to update invoice status on server.");
+        } catch (error) {
+          console.error("Error updating status:", error);
+        }
+      };
+
   return (
     <SidebarProvider>
       <AppSidebar />
       <div className="flex flex-col w-full">
         <SidebarInset>
-          <header className="flex h-14 md:h-12 items-center px-4 w-full border-b shadow-sm">
-            <SidebarTrigger className="mr-2" />
-            <ModeToggle />
+        <header className="flex h-14 md:h-12 items-center px-4 w-full border-b shadow-sm">
+        <SidebarTrigger className="mr-2" />
+          <ModeToggle/>
             <Separator orientation="vertical" className="h-6 mx-2" />
             <Breadcrumb>
               <BreadcrumbList className="flex items-center space-x-2">
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/invoice">Invoice</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -162,11 +164,6 @@ export default function App() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="flex-1 flex justify-end space-x-4 mr-10">
-                            <div  className="w-52">
-                                <SearchBar/>
-                            </div>
-                        </div>
           </header>
         </SidebarInset>
 
@@ -174,16 +171,16 @@ export default function App() {
           {error && <p className="text-red-500 text-center">{error}</p>}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl md:max-w-4xl mx-auto">
-            {Object.keys(statusColors).map((status) => {
+          {Object.keys(statusColors).map((status) => {
               const invoiceStatus = groupedInvoices[status] || [];
               const totalAmount = invoiceStatus.reduce((sum, invoice) => sum + invoice.amount, 0);
 
               return (
                 <div
                   key={status}
-                  className={`p-4  min-h-[300px] transition-all w-full border ${draggedOver === status ? "border-gray-500 border-dashed" : "border-transparent"
-                    }`}
+                  className={`p-4  min-h-[300px] transition-all w-full border ${draggedOver === status ? "border-gray-500 border-dashed" : "border-transparent"}`}
                   onDrop={(e) => handleDrop(e, status)}
+
                   onDragOver={(e) => {
                     e.preventDefault();
                     setDraggedOver(status);
@@ -196,9 +193,7 @@ export default function App() {
                     <p className="text-sm font-semibold text-black">Total Amount: ₹{totalAmount}</p>
                   </div>
 
-                  <div
-                    className="scrollable"
-                  >
+                  <div className="mt-6 space-y-3 min-h-[250px] max-h-[500px] overflow-auto">
                     {invoiceStatus.length === 0 ? (
                       <p className="text-gray-500 text-center">No invoices available</p>
                     ) : (
@@ -206,18 +201,14 @@ export default function App() {
                         <div
                           key={invoice._id}
                           className="border border-gray-300 rounded-lg shadow-md bg-white p-3 cursor-grab active:cursor-grabbing"
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, invoice, status)}
+                          onClick={() => handleInvoiceClick(invoice)}
                         >
-                          <div
-                            className="card"
-                            draggable
-                            onDragStart={(e) => handleDragStart(e, invoice, status)}
-                            onClick={() => handleInvoiceClick(invoice)}
-                          >
-                            <p className="text-sm font-semibold text-black">Company Name: {invoice.companyName}</p>
-                            <p className="text-sm font-semibold text-black">Product: {invoice.productName}</p>
-                            <p className="text-sm font-semibold text-black">Amount: ₹{invoice.amount}</p>
-                            <p className="text-sm font-semibold text-black">Next Date: {formatDate(invoice.date)}</p>
-                          </div>
+                          <p className="text-sm font-semibold text-black">Company Name: {invoice.companyName}</p>
+                          <p className="text-sm font-semibold text-black">Product: {invoice.productName}</p>
+                          <p className="text-sm font-semibold text-black">Next Date: {formatDate(invoice.date)}</p>
+                          <p className="text-sm font-semibold text-black">Amount: ₹{invoice.amount}</p>
                         </div>
                       ))
                     )}
@@ -226,7 +217,6 @@ export default function App() {
               );
             })}
           </div>
-
           {isModalOpen && selectedInvoice && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div className="w-full max-w-lg relative">
@@ -242,8 +232,8 @@ export default function App() {
                       setIsModalOpen(false); // Close Modal
                     }}
                   >
-                    <MdCancel className="text-white text-2xl" />
-
+                    <MdCancel className="text-white text-2xl"/>
+                      
                   </div>
 
                   {/* Title */}
@@ -252,7 +242,7 @@ export default function App() {
                   {/* Lead Details in Two Columns */}
                   <div className="grid grid-cols-2 gap-4 text-white">
                     {Object.entries(selectedInvoice)
-                      .filter(([key]) => !["_id", "isActive", "createdAt", "updatedAt", "customMessage", "_v"].includes(key))
+                      .filter(([key]) => !["_id", "isActive", "createdAt", "updatedAt"].includes(key))
                       .map(([key, value]) => (
                         <p key={key} className="text-sm">
                           <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{" "}
@@ -269,7 +259,6 @@ export default function App() {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </SidebarProvider>

@@ -15,6 +15,7 @@ const { storeNotification } = require('./controller/notification.controller');
 connectDB();
 
 const app = express();
+app.use('/uploads', express.static(path.join(__dirname)));
 
 // Middleware setup
 app.use(cors());
@@ -32,38 +33,34 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Multer storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Directory where files will be saved
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique file names with timestamp
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/'); // Directory where files will be saved
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname)); // Unique file names with timestamp
+//   }
+// });
 
-// Multer file filter to allow only images
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
-    const mimeType = allowedTypes.test(file.mimetype);
-    const extName = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+// // Multer file filter to allow only images
+// const upload = multer({
+//   storage,
+//   fileFilter: (req, file, cb) => {
+//     const allowedTypes = /jpeg|jpg|png|gif/;
+//     const mimeType = allowedTypes.test(file.mimetype);
+//     const extName = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     
-    if (mimeType && extName) {
-      return cb(null, true);
-    }
-    cb(new Error('Only images are allowed!'));
-  }
-});
+//     if (mimeType && extName) {
+//       return cb(null, true);
+//     }
+//     cb(new Error('Only images are allowed!'));
+//   }
+// });
 
-
-// Serve static files from 'uploads' folder
-app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
-
-// Route for file upload
-app.post('/upload', upload.single('image'), (req, res) => {
-  res.send('File uploaded successfully!');
-}); 
+// // Route for file upload
+// app.post('/upload', upload.single('image'), (req, res) => {
+//   res.send('File uploaded successfully!');
+// });
 
 // API routes
 app.use("/api/v1", routes);
@@ -79,13 +76,13 @@ app.get(
   (req, res) => {
     const { isFirstLogin, token, email } = req.user;
 
-    // Append email and token as query parameters
-    const redirectTo = `http://localhost:3000/${isFirstLogin ? "Profile" : "Dashboard"}?token=${token}&email=${email}`;
-    
+    const redirectTo = isFirstLogin
+      ? `http://localhost:3000/Profile`
+      : `http://localhost:3000/Dashboard`;
+
     res.redirect(redirectTo);
   }
 );
-
 
 
 // Create HTTP server and attach Socket.IO

@@ -646,6 +646,7 @@ export default function LeadPage() {
                 </header>
 
                 <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-15 max-w-screen-xl">
+                    <div class="container mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-15">
                     <Table
                         isHeaderSticky
                         aria-label="Leads table with custom cells, pagination and sorting"
@@ -697,231 +698,179 @@ export default function LeadPage() {
                             )}
                         </TableBody>
                     </Table>
+</div>
+<Dialog open={isAddNewOpen} onOpenChange={setIsAddNewOpen}>
+    <DialogContent 
+        className="sm:max-w-[1500px] w-[90vw] mx-auto overflow-y-auto max-h-[90vh] p-6"
+        style={{ maxWidth: "900px" }}
+    >
+        <DialogHeader>
+            <DialogTitle>Add New Lead</DialogTitle>
+            <DialogDescription>
+                Fill in the details to create a new lead.
+            </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="companyName" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Company Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter company name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="customerName" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Customer Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter customer name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                </div>
 
-                    <Dialog open={isAddNewOpen} onOpenChange={setIsAddNewOpen}>
-                        <DialogContent className="sm:max-w-[2000px] w-[90vw]">
-                            <DialogHeader>
-                                <DialogTitle>Add New Lead</DialogTitle>
-                                <DialogDescription>
-                                    Fill in the details to create a new lead.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="companyName"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Company Name</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter company name" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="customerName"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Customer Name</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter customer name" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="emailAddress" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Email Address</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter email address" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="address" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Address</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter address" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                </div>
 
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="emailAddress"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Email Address</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter email address" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="address"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Address</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter address" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="productName" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Product Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter product name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="amount" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Amount</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Enter amount" 
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                </div>
 
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="productName"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Product Name</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter product name" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="amount"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Amount</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="Enter amount"
-                                                            type="number"
-                                                            {...field}
-                                                            onChange={(e) => {
-                                                                // Convert the string value to a number
-                                                                const value = e.target.valueAsNumber || 0; // Use `valueAsNumber` to get a number
-                                                                field.onChange(value); // Pass the number to the form
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="gstNumber" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>GST Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter GST number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="status" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Status</FormLabel>
+                            <FormControl>
+                                <select 
+                                    {...field} 
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="New">New</option>
+                                    <option value="Discussion">Discussion</option>
+                                    <option value="Demo">Demo</option>
+                                    <option value="Proposal">Proposal</option>
+                                    <option value="Decided">Decided</option>
+                                </select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                </div>
 
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="gstNumber"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>GST Number</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter GST number" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="status"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Status</FormLabel>
-                                                    <FormControl>
-                                                        <select
-                                                            {...field}
-                                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                        >
-                                                            <option value="New">New</option>
-                                                            <option value="Discussion">Discussion</option>
-                                                            <option value="Demo">Demo</option>
-                                                            <option value="Proposal">Proposal</option>
-                                                            <option value="Decided">Decided</option>
-                                                        </select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="contactNumber" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Contact Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter contact number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                </div>
 
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="contactNumber"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Contact Number</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Enter contact number" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="date" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Start Date</FormLabel>
+                            <FormControl>
+                                <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="endDate" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>End Date</FormLabel>
+                            <FormControl>
+                                <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}/>
+                </div>
 
-                                    </div>
+                <FormField control={form.control} name="notes" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Notes</FormLabel>
+                        <FormControl>
+                            <textarea 
+                                placeholder="Enter notes" 
+                                {...field} 
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
 
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="date"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Start Date</FormLabel>
-                                                    <FormControl>
-                                                        <Input type="date" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="endDate"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>End Date</FormLabel>
-                                                    <FormControl>
-                                                        <Input type="date" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <FormField
-                                        control={form.control}
-                                        name="notes"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Notes</FormLabel>
-                                                <FormControl>
-                                                    <textarea
-                                                        placeholder="Enter notes"
-                                                        {...field}
-                                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-
-                                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                                        {isSubmitting ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Submitting...
-                                            </>
-                                        ) : (
-                                            "Submit Lead"
-                                        )}
-                                    </Button>
-                                </form>
-                            </Form>
-                        </DialogContent>
-                    </Dialog>
+                <Button type="submit" className="w-full mt-4" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Submitting...
+                        </>
+                    ) : (
+                        "Submit Lead"
+                    )}
+                </Button>
+            </form>
+        </Form>
+    </DialogContent>
+</Dialog>
 
                     <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                         <DialogContent className="sm:max-w-[600px]">

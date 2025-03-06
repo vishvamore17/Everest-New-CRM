@@ -13,7 +13,6 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Meteors } from "@/components/ui/meteors";
 import { useRouter } from "next/navigation"; // Import useRouter
 import { ModeToggle } from "@/components/ModeToggle"
-import SearchBar from '@/components/globalSearch'
 
 interface Lead {
   _id: string;
@@ -94,14 +93,15 @@ export default function App() {
     Decided: "bg-purple-200 text-gray-800 border-2 border-purple-900 shadow-lg shadow-purple-900/50",
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      console.warn('Invalid date: ${dateString}'); // Log invalid dates for debugging
-      return "Invalid Date"; // Return a fallback value
-    }
-    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-  };
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.warn(`Invalid date: ${dateString}`); // Log invalid dates for debugging
+    return "Invalid Date"; // Return a fallback value
+  }
+  return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+};
+
   const handleDragStart = (e: React.DragEvent, lead: Lead, fromStatus: string) => {
     e.dataTransfer.setData("lead", JSON.stringify(lead));
     e.dataTransfer.setData("fromStatus", fromStatus);
@@ -151,7 +151,7 @@ export default function App() {
             <Breadcrumb>
               <BreadcrumbList className="flex items-center space-x-2">
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/lead">Lead</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -159,11 +159,6 @@ export default function App() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="flex-1 flex justify-end space-x-4 mr-10">
-                            <div  className="w-52">
-                                <SearchBar/>
-                            </div>
-                        </div>
           </header>
         </SidebarInset>
 
@@ -266,7 +261,6 @@ export default function App() {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </SidebarProvider>

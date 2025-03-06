@@ -119,7 +119,7 @@ html {
 .card {
   width: 100%; /* Adjust as needed */
   max-width: 500px; /* Prevent it from being too wide */
-  margin-top: 8px;
+  margin-top: 12px;
   border-radius: 8px;
   background-color: white;
   padding: 10px;
