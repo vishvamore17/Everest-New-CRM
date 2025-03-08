@@ -15,7 +15,6 @@ import { toast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-// import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Edit, Trash2, Loader2, PlusCircle, SearchIcon, ChevronDownIcon } from "lucide-react"
@@ -64,23 +63,23 @@ export const invoiceSchema = z.object({
     status: z.enum(["New", "Paid", "Pending"]).default("New"),
     date: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: "Invalid date",
-      }).transform((val) => new Date(val)),  // ✅ Convert string to Date
+      }).transform((val) => new Date(val)), 
     
       endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: "Invalid date",
-      }).transform((val) => new Date(val)),  // ✅ Convert string to Date
+      }).transform((val) => new Date(val)), 
     totalWithoutGst: z.coerce.number().min(0).default(0),
     totalWithGst: z.coerce.number().min(0).default(0),
     paidAmount: z.coerce.number().min(0).default(0),
     remainingAmount: z.coerce.number().min(0).default(0)
 });
 const formatDate = (date: any) => {
-    if (!date) return "N/A"; // Handle undefined/null values gracefully
+    if (!date) return "N/A"; 
     const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) return "Invalid Date"; // Handle invalid dates
-    return parsedDate.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
+    if (isNaN(parsedDate.getTime())) return "Invalid Date"; 
+    return parsedDate.toLocaleDateString("en-GB"); 
 };
-// Table columns definition
+
 const columns = [
     { name: "COMPANY", uid: "companyName", sortable: true },
     { name: "CUSTOMER", uid: "customerName", sortable: true },
@@ -97,13 +96,13 @@ const columns = [
         name: "DATE",
         uid: "date",
         sortable: true,
-        render: (row: any) => formatDate(row.date) // Ensure only date is shown
+        render: (row: any) => formatDate(row.date) 
     },
     {
         name: "END DATE",
         uid: "endDate",
         sortable: true,
-        render: (row: any) => formatDate(row.endDate) // Ensure only date is shown
+        render: (row: any) => formatDate(row.endDate) 
     },
     { name: "TOTAL (WITHOUT GST)", uid: "totalWithoutGst", sortable: true },
     { name: "TOTAL (WITH GST)", uid: "totalWithGst", sortable: true },
@@ -161,9 +160,9 @@ export default function InvoicePage() {
 const onRowsPerPageChange = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
-    setCurrentPage(1); // Reset to first page to prevent out-of-range issues
+    setCurrentPage(1); 
 };
-    // Form setup
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -245,10 +244,10 @@ const onRowsPerPageChange = (event) => {
         });
     }, [sortDescriptor, items]);
 
-    // Function to handle edit button click
+
     const handleEditClick = (invoice: Invoice) => {
         setSelectedInvoice(invoice);
-        // Pre-fill the form with invoice data
+        
         form.reset({
             companyName: invoice.companyName,
             customerName: invoice.customerName,

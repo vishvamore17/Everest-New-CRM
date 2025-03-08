@@ -73,23 +73,162 @@ const remindEvent = async () => {
 cron.schedule('0 * * * *', remindEvent);
 
 
+// const getAllData = async (req, res) => {
+//   try {
+//     const data = await Events.find({}); // Fetch all documents from the Events collection
+//     if (!data || data.length === 0) {
+//       return res.status(200).json({
+//         success: true,
+//         message: "No events found.",
+//         data: [],
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: data,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching Data:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal server error: " + error.message,
+//     });
+//   }
+// };
+
+// const createData = async (req, res) => {
+//   const { date, event } = req.body;
+//   console.log("Received Data:", { date, event });
+
+//   try {
+//     // Validate date
+//     const parsedDate = new Date(date);
+//     if (isNaN(parsedDate.getTime())) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid date format.",
+//       });
+//     }
+
+//     // Create and save the new event
+//     const newEvent = new Events({
+//       date: parsedDate,
+//       event,
+//     });
+
+//     const savedEvent = await newEvent.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Event created successfully.",
+//       data: savedEvent,
+//     });
+//   } catch (error) {
+//     console.error("Error creating event:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal server error: " + error.message,
+//     });
+//   }
+// };
+
+// const updateData = async (req, res) => {
+//   const { id } = req.params; // Get event ID from URL parameter
+//   const updatedData = req.body; // Get updated event data from the request body
+
+//   try {
+//     // Find the event by ID
+//     const calender = await Events.findById(id);
+
+//     // Check if the event exists
+//     if (!calender) {
+//       return res.status(404).json({ message: 'Event not found' });
+//     }
+
+//     // Update the event with the new data
+//     Object.keys(updatedData).forEach((key) => {
+//       calender[key] = updatedData[key]; // Update each field in the event object
+//     });
+
+//     // Save the updated event to the database
+//     await calender.save();
+
+//     // Return a success message with the updated event
+//     res.status(200).json({
+//       success: true,
+//       message: 'Event updated successfully!',
+//       data: calender,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Failed to update event' });
+//   }
+// };
+
+// const deleteData = async (req, res) => {
+//   const { id } = req.body;
+
+//   try {
+//     // Validate ID
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid event ID provided.",
+//       });
+//     }
+
+//     // Delete the event
+//     const deletedEvent = await Events.findByIdAndDelete(id);
+
+//     if (!deletedEvent) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Event not found.",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Event deleted successfully.",
+//     });
+//   } catch (error) {
+//     console.error("Error deleting event:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal server error: " + error.message,
+//     });
+//   }
+// };
+
+// // Get event data by ID for editing
+// const getDataById = async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const event = await Events.findById(id); // Fetch the event by ID
+//     if (!event) {
+//       return res.status(404).json({ message: 'Event not found.' });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: event,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching event:", error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
+
 const getAllData = async (req, res) => {
   try {
-    const data = await Events.find({}); // Fetch all documents from the Events collection
-    if (!data || data.length === 0) {
-      return res.status(200).json({
-        success: true,
-        message: "No events found.",
-        data: [],
-      });
-    }
-
+    const data = await Events.find({});
     res.status(200).json({
       success: true,
       data: data,
     });
   } catch (error) {
-    console.error("Error fetching Data:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error: " + error.message,
@@ -97,35 +236,25 @@ const getAllData = async (req, res) => {
   }
 };
 
+// Create a new event
 const createData = async (req, res) => {
-  const { date, event } = req.body;
-  console.log("Received Data:", { date, event });
+  const { title, date, calendarId, event } = req.body;
 
   try {
-    // Validate date
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid date format.",
-      });
-    }
-
-    // Create and save the new event
     const newEvent = new Events({
-      date: parsedDate,
+      title,
+      date: new Date(date),
+      calendarId,
       event,
     });
 
     const savedEvent = await newEvent.save();
-
     res.status(201).json({
       success: true,
       message: "Event created successfully.",
       data: savedEvent,
     });
   } catch (error) {
-    console.error("Error creating event:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error: " + error.message,
@@ -133,52 +262,37 @@ const createData = async (req, res) => {
   }
 };
 
+// Update an event
 const updateData = async (req, res) => {
-  const { id } = req.params; // Get event ID from URL parameter
-  const updatedData = req.body; // Get updated event data from the request body
+  const { id } = req.params;
+  const { title, date, calendarId } = req.body;
 
   try {
-    // Find the event by ID
-    const calender = await Events.findById(id);
+    const updatedEvent = await Events.findByIdAndUpdate(
+      id,
+      { title, date: new Date(date), calendarId },
+      { new: true }
+    );
 
-    // Check if the event exists
-    if (!calender) {
-      return res.status(404).json({ message: 'Event not found' });
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
     }
 
-    // Update the event with the new data
-    Object.keys(updatedData).forEach((key) => {
-      calender[key] = updatedData[key]; // Update each field in the event object
-    });
-
-    // Save the updated event to the database
-    await calender.save();
-
-    // Return a success message with the updated event
     res.status(200).json({
       success: true,
-      message: 'Event updated successfully!',
-      data: calender,
+      message: "Event updated successfully!",
+      data: updatedEvent,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to update event' });
+    res.status(500).json({ message: "Failed to update event" });
   }
 };
 
+// Delete an event
 const deleteData = async (req, res) => {
   const { id } = req.body;
 
   try {
-    // Validate ID
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid event ID provided.",
-      });
-    }
-
-    // Delete the event
     const deletedEvent = await Events.findByIdAndDelete(id);
 
     if (!deletedEvent) {
@@ -193,7 +307,6 @@ const deleteData = async (req, res) => {
       message: "Event deleted successfully.",
     });
   } catch (error) {
-    console.error("Error deleting event:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error: " + error.message,
@@ -201,14 +314,14 @@ const deleteData = async (req, res) => {
   }
 };
 
-// Get event data by ID for editing
+// Get event by ID
 const getDataById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const event = await Events.findById(id); // Fetch the event by ID
+    const event = await Events.findById(id);
     if (!event) {
-      return res.status(404).json({ message: 'Event not found.' });
+      return res.status(404).json({ message: "Event not found." });
     }
 
     res.status(200).json({
@@ -216,8 +329,7 @@ const getDataById = async (req, res) => {
       data: event,
     });
   } catch (error) {
-    console.error("Error fetching event:", error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -226,5 +338,7 @@ module.exports = {
   createData,
   updateData,
   deleteData,
-  getDataById, // Exposed function to fetch event by ID
+  getDataById,
 };
+// controller
+

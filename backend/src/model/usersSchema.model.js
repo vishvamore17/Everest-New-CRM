@@ -15,6 +15,8 @@ const usersSchema = new mongoose.Schema(
             unique: true,
             lowercase: true
         },
+        image: { type: String }, // Ensure this field exists
+
         password: {
             type: String,
             // required: true,

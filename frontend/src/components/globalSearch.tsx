@@ -46,7 +46,7 @@ const SearchBar = () => {
                 <p className="text-gray-500 text-sm">No results found.</p>
               ) : (
                 results.suggestions.map((item, index) => (
-                  <Link key={index} href={item.path} className="block p-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded">
+                  <Link key={index} href={item.path} className="block p-2 text-sm font-medium text-white hover:bg-gray-500 rounded">
                     {item.page}
                   </Link>
                 ))

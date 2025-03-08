@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import SessionProviderWrapper from "@/app/SessionProviderWrapper"; // Import the new wrapper
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,18 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning={true} lang="en"><link rel="shortcut icon" href="/logo.svg" sizes="any"/>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider
+    <html suppressHydrationWarning={true} lang="en">
+      <link rel="shortcut icon" href="/logo.svg" sizes="any" />
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <SessionProviderWrapper> {/* Wrap the app with SessionProvider */}
+          <ThemeProvider
             attribute="class"
-            defaultTheme="system"   
+            defaultTheme="system"
             enableSystem
-            disableTransitionOnChange>
+            disableTransitionOnChange
+          >
             {children}
           </ThemeProvider>
-          <Toaster/>
+        </SessionProviderWrapper>
+        <Toaster />
       </body>
     </html>
   );
-} 
+}

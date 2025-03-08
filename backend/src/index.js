@@ -25,8 +25,13 @@ app.use(express.json());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    resave: true,
+    resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // Session expires in 24 hours
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    },
   })
 );
 app.use(passport.initialize());
@@ -74,15 +79,47 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
+    console.log("User object:", req.user); // Log the user object
     const { isFirstLogin, token, email } = req.user;
 
+    // Set the token in a cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    // Redirect based on first login
     const redirectTo = isFirstLogin
-      ? `http://localhost:3000/Profile`
+      ? `http://localhost:3000/GoogleProfile`
       : `http://localhost:3000/Dashboard`;
 
     res.redirect(redirectTo);
   }
 );
+
+
+app.get("/auth/google/session", (req, res) => {
+  if (req.isAuthenticated()) {
+    console.log("Authenticated User:", req.user); // Logs user details in the backend
+    return res.json({ user: req.user });
+  }
+  console.log("User not authenticated");
+  res.status(401).json({ message: "Not authenticated" });
+});
+
+
+// Logout route
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
+    res.clearCookie("token"); // Clear the token cookie
+    res.redirect("/");
+  });
+});
+
 
 
 // Create HTTP server and attach Socket.IO
